@@ -1,14 +1,12 @@
 package com.sistema.notificaciones.services;
 
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sistema.notificaciones.models.Rol;
 import com.sistema.notificaciones.models.Usuario;
-import com.sistema.notificaciones.models.Usuario_Rol;
 import com.sistema.notificaciones.repository.RolRepository;
 import com.sistema.notificaciones.repository.UsuarioRepository;
 
@@ -19,19 +17,23 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    @Autowired RolRepository rolRepository;
+    @Autowired 
+    private RolRepository rolRepository;
 
     @Override
-    public Usuario guardarUsuario(Usuario usuario, Set<Usuario_Rol> usuarioRoles) throws Exception {
+    public Usuario guardarUsuario(Usuario usuario) throws Exception {
         Usuario usuarioLocal=usuarioRepository.findByusername(usuario.getUsername()); 
         if(usuarioLocal!=null){
             log.warn("El usuario ya esta registrado {}");
             throw new Exception("El usuario ya esta");
         }else{
-            for(Usuario_Rol usuarioRol:usuarioRoles){
-                rolRepository.save(usuarioRol.getRol());
+            if(usuario.getRoles()!=null && !usuario.getRoles().isEmpty()){
+                for(Rol rol: usuario.getRoles()){
+                    if(rol.getId_rol()==null){
+                        rolRepository.save(rol);
+                    }
+                }
             }
-            usuario.getUsuarioRoles().addAll(usuarioRoles);
             usuarioLocal=usuarioRepository.save(usuario);
         }
         return usuarioLocal;

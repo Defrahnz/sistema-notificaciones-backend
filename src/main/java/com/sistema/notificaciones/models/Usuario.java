@@ -2,9 +2,8 @@ package com.sistema.notificaciones.models;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +26,7 @@ public class Usuario {
     //Básico para la generación de la BD
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id_usuario")
     private Integer id_usuario;
     //Datos personales
     private String nombre;
@@ -52,15 +51,10 @@ public class Usuario {
     //Otros datos
     private Boolean activo=true;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="usuario")
-    @JsonIgnore
-    private Set<Usuario_Rol> usuarioRoles=new HashSet<>();
-    
-    @OneToMany(mappedBy = "usuario")
-    private Set<Usuario_Mensaje> usuarioMensajes=new HashSet<>();
-
     @ManyToMany(cascade =  CascadeType.ALL, fetch =  FetchType.EAGER)
-    @JoinTable(name="usuarios_zonas",joinColumns = @JoinColumn(name="usiario_id",referencedColumnName ="id_usuario"),inverseJoinColumns = @JoinColumn(name="zona_id",referencedColumnName = "id_zona"))
-    private List<Zona> zonas=new ArrayList<>();
+    @JoinTable(name="usuarios_roles", joinColumns = @JoinColumn(name="usuario_id",referencedColumnName = "id_usuario"),inverseJoinColumns = @JoinColumn(name="rol_id",referencedColumnName = "id_rol"))
+    private List<Rol> roles=new ArrayList<>();
+    
+
 
 }
